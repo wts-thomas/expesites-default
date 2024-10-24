@@ -50,33 +50,60 @@ add_action( 'after_setup_theme', 'title_theme_slug_setup' );
 /*  Removal of Plugin Version Update Notices
 _____________________________________________________________________*/
 
+// Function to add settings fields for hiding plugin updates
 function wpb_add_update_plugins_option() {
-   // Register a new setting for "hiding plugin updates"
-   register_setting('general', 'hide_plugin_updates', 'absint'); // absint as a sanitization callback function ensures the value is an absolute integer.
+   // Register a new setting for hiding Elementor plugin updates
+   register_setting('general', 'hide_plugin_updates', 'absint');
+   
+   // Register another setting for hiding updates of a different set of plugins
+   register_setting('general', 'hide_additional_plugin_updates', 'absint');
 
-   // Add a new section to the General Settings page for the plugin update toggle
+   // Add a section for hiding Elementor plugin updates
    add_settings_field(
        'hide_plugin_updates', // ID
-       'Hide Plugin Updates', // Title
+       'Hides Elementor Plugin Updates', // Title
        'wpb_hide_plugin_updates_callback', // Callback function
+       'general' // Page to display on
+   );
+   
+   // Add another section for hiding additional plugins
+   add_settings_field(
+       'hide_additional_plugin_updates', // ID
+       'Hides Dynamic Plugin Updates', // Title
+       'wpb_hide_additional_plugin_updates_callback', // Callback function
        'general' // Page to display on
    );
 }
 
-function wpb_hide_plugin_updates_callback() { // The callback function for the checkbox
+// Callback function for the first checkbox (Elementor plugins)
+function wpb_hide_plugin_updates_callback() {
    $value = get_option('hide_plugin_updates', 0); // Default to 0 (unchecked)
-   echo '<input type="checkbox" id="hide_plugin_updates" name="hide_plugin_updates" ' . checked(1, $value, false) . ' value="1"> Hides updates for specific plugins';
+   echo '<input type="checkbox" id="hide_plugin_updates" name="hide_plugin_updates" ' . checked(1, $value, false) . ' value="1"> Hides Elementor and Elementor Pro updates that require testing before being updated';
+}
+
+// Callback function for the second checkbox (Dynamic and Ultimate Elementor plugins)
+function wpb_hide_additional_plugin_updates_callback() {
+   $value = get_option('hide_additional_plugin_updates', 0); // Default to 0 (unchecked)
+   echo '<input type="checkbox" id="hide_additional_plugin_updates" name="hide_additional_plugin_updates" ' . checked(1, $value, false) . ' value="1"> Hides various dynamic updates that require testing before being updated';
 }
 
 add_action('admin_init', 'wpb_add_update_plugins_option');
 
-
+// Function to filter plugin updates based on the selected options
 function filter_plugin_updates( $value ) {
-   // Check if the option to hide plugin updates is enabled
+   // Check if the Elementor plugin updates should be hidden
    if (get_option('hide_plugin_updates', 0)) {
        if ( isset( $value ) && is_object( $value ) ) {
            unset( $value->response[ 'elementor/elementor.php' ] );
            unset( $value->response[ 'elementor-pro/elementor-pro.php' ] );
+       }
+   }
+
+   // Check if the additional plugin updates should be hidden
+   if (get_option('hide_additional_plugin_updates', 0)) {
+       if ( isset( $value ) && is_object( $value ) ) {
+           unset( $value->response[ 'dynamic-content-for-elementor/dynamic-content-for-elementor.php' ] );
+           unset( $value->response[ 'ultimate-elementor/ultimate-elementor.php' ] );
        }
    }
 
@@ -129,7 +156,7 @@ add_filter( 'auto_update_plugin', '__return_false' );
 add_filter( 'auto_update_theme', '__return_false' );
 
 // STOPS DEFAULT LAZY LOAD
-//add_filter( 'wp_lazy_loading_enabled', '__return_false' );
+add_filter( 'wp_lazy_loading_enabled', '__return_false' );
 
 // REMOVE AVATAR DONATION MESSAGE
 remove_action('wpua_donation_message', 'wpua_do_donation_message');
@@ -301,7 +328,7 @@ add_filter( 'elementor/shapes/additional_shapes', 'custom_elementor_shape_divide
 /*  ADMIN DASHBOARD LINKS
 ________________________________________________________________________*/
 
-// Remove Admin features from Dashboard excluding WTS users
+// Remove Admin features from Dashboard excluding users
 
 // Add the checkbox setting to the General settings page
 function exp_add_admin_features_checkbox() {
@@ -338,6 +365,7 @@ function exp_remove_menus() {
   $current_user = wp_get_current_user(); 
   if (strpos($current_user->user_email, '@expesites.com') === false) { 
      // List of menu pages to remove
+     remove_menu_page('edit-comments.php');
      remove_menu_page('themes.php');                             
      remove_menu_page('plugins.php');                           
      remove_menu_page('tools.php');                             
@@ -348,8 +376,11 @@ function exp_remove_menus() {
      remove_menu_page('elementor');                             
      remove_menu_page('edit.php?post_type=elementor_library');
      remove_submenu_page('edit.php?post_type=elementor_library', 'edit.php?post_type=elementor_library&tabs_group=popup&elementor_library_type=popup');
-     remove_menu_page('edit.php?post_type=search-filter-widget');
      remove_menu_page('dce-features');
+     remove_menu_page('search-filter');
+     remove_menu_page('wp-mail-smtp');
+     remove_menu_page('itsec');
+     remove_menu_page('wpseo_dashboard');
   }
 }
 
@@ -357,6 +388,44 @@ function exp_remove_menus() {
 add_action('admin_init', 'exp_add_admin_features_checkbox');
 add_action('admin_menu', 'exp_conditional_remove_menus', 9999);
 
+
+/*  SHOW GRAVITY FORMS FOR USERS WITH CHECKBOX
+_____________________________________________________________________*/
+
+// Add the checkbox setting to the General settings page for Gravity Forms
+function exp_add_gravity_forms_visibility_checkbox() {
+   add_settings_field(
+       'exp_show_gravity_forms', // Option ID
+       'Gravity Forms Admin Menu', // Label for the checkbox
+       'exp_render_gravity_forms_visibility_checkbox', // Callback to render the checkbox
+       'general' // Settings page (general)
+   );
+   
+   register_setting('general', 'exp_show_gravity_forms'); // Register the setting
+}
+
+function exp_render_gravity_forms_visibility_checkbox() {
+   // Retrieve the current value of the setting
+   $show_gravity_forms = get_option('exp_show_gravity_forms');
+   ?>
+   <input type="checkbox" name="exp_show_gravity_forms" value="1" <?php checked(1, $show_gravity_forms); ?>> Show Gravity Forms Admin Menu for ExpeSites Users
+   <?php
+}
+
+// Conditionally hide or show Gravity Forms menu based on the checkbox setting
+function exp_conditional_hide_gravity_forms_menu() {
+   $show_gravity_forms = get_option('exp_show_gravity_forms');
+   $current_user = wp_get_current_user();
+
+   // If the user is not from ExpeSites and the checkbox is unchecked, hide Gravity Forms
+   if (strpos($current_user->user_email, '@expesites.com') === false && !$show_gravity_forms) {
+       remove_menu_page('gf_edit_forms'); // Gravity Forms admin menu slug
+   }
+}
+
+// Hook the new functions to appropriate WordPress actions
+add_action('admin_init', 'exp_add_gravity_forms_visibility_checkbox'); // To add the checkbox
+add_action('admin_menu', 'exp_conditional_hide_gravity_forms_menu', 9999); // To hide/show Gravity Forms menu
 
 
 /*  HIDE, EDIT WITH ELEMENTOR BUTTON(S)
@@ -401,7 +470,6 @@ function hide_elementor_button() {
 add_action('admin_init', 'add_elementor_checkbox');
 add_action('admin_head-post.php', 'hide_elementor_button');
 add_action('admin_head-post-new.php', 'hide_elementor_button');
-
 
 
 /*  REMOVE DASHBOARD META BOXES
@@ -532,14 +600,14 @@ function eg_register_menus() {
 	register_nav_menus(
   		array(
 		'header_nav_menu' => __( 'Header Menu' ),
-        'header_addnav_menu' => __( 'Additional Header Menu' ),
-		'footer_nav_menu' => __( 'Footer Menu' ),
-        'footer_addnav_menu' => __( 'Additional Footer Menu' ),
-        'footer_alt_menu' => __( 'Alternate Menu' ),
-        'content_altTwo_menu' => __( 'Alternate Menu - 2' ),
-        'content_altThr_menu' => __( 'Alternate Menu - 3' ),
-        'content_altFou_menu' => __( 'Alternate Menu - 4' ),
-        'content_altFiv_menu' => __( 'Alternate Menu - 5' ),
+         'header_addnav_menu' => __( 'Additional Header Menu' ),
+		   'footer_nav_menu' => __( 'Footer Menu' ),
+         'footer_addnav_menu' => __( 'Additional Footer Menu' ),
+         'footer_alt_menu' => __( 'Alternate Menu' ),
+         'content_altTwo_menu' => __( 'Alternate Menu - 2' ),
+         'content_altThr_menu' => __( 'Alternate Menu - 3' ),
+         'content_altFou_menu' => __( 'Alternate Menu - 4' ),
+         'content_altFiv_menu' => __( 'Alternate Menu - 5' ),
     	)
 	);
 }
