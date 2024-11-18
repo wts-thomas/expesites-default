@@ -365,6 +365,7 @@ function exp_remove_menus() {
   $current_user = wp_get_current_user(); 
   if (strpos($current_user->user_email, '@expesites.com') === false) { 
      // List of menu pages to remove
+     remove_submenu_page('index.php', 'update-core.php');
      remove_menu_page('edit-comments.php');
      remove_menu_page('themes.php');                             
      remove_menu_page('plugins.php');                           
@@ -479,7 +480,7 @@ function add_elementor_page_view_checkbox() {
    // Add a new setting to the "General" WordPress settings page
    add_settings_field(
        'hide_elementor_notices',
-       'Hide Elementor Notices',
+       'Hide "Edit with Elementor"',
        'render_elementor_page_view_checkbox',
        'general'
    );
