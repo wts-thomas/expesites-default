@@ -472,6 +472,73 @@ add_action('admin_head-post.php', 'hide_elementor_button');
 add_action('admin_head-post-new.php', 'hide_elementor_button');
 
 
+/*  HIDE ELEMENTOR NOTICES AND LINKS IN PAGE VIEWS
+________________________________________________________________________*/
+
+function add_elementor_page_view_checkbox() {
+   // Add a new setting to the "General" WordPress settings page
+   add_settings_field(
+       'hide_elementor_notices',
+       'Hide Elementor Notices',
+       'render_elementor_page_view_checkbox',
+       'general'
+   );
+   
+   // Register the new setting
+   register_setting('general', 'hide_elementor_notices');
+}
+
+function render_elementor_page_view_checkbox() {
+   // Retrieve the current value of the setting
+   $hide_notices = get_option('hide_elementor_notices');
+   ?>
+   <input type="checkbox" name="hide_elementor_notices" value="1" <?php checked(1, $hide_notices); ?>> Hides the edit with Elementor name and links when viewing all Pages
+   <?php
+}
+
+function hide_elementor_notices_links() {
+   // Check if the "Hide Elementor Notices" setting is checked
+   $hide_notices = get_option('hide_elementor_notices');
+   if ($hide_notices) {
+       // Add JavaScript to hide spans containing "Elementor" and the "Edit with Elementor" span
+       ?>
+       <script>
+           document.addEventListener('DOMContentLoaded', function () {
+               // Hide "Elementor" post state and its preceding em dash
+               const postStateElements = document.querySelectorAll('.post-state');
+               postStateElements.forEach(function (element) {
+                   if (element.textContent.trim() === 'Elementor') {
+                       element.style.display = 'none';
+                       
+                       // Hide the preceding em dash (sibling text node)
+                       const previousSibling = element.previousSibling;
+                       if (previousSibling && previousSibling.nodeType === Node.TEXT_NODE) {
+                           const trimmedText = previousSibling.textContent.trim();
+                           if (trimmedText === '—') {
+                               previousSibling.textContent = ''; // Clear the em dash text
+                           }
+                       }
+                   }
+               });
+
+               // Hide "Edit with Elementor" button
+               const editWithElementorElements = document.querySelectorAll('.edit_with_elementor');
+               editWithElementorElements.forEach(function (element) {
+                   element.style.display = 'none';
+               });
+           });
+       </script>
+       <?php
+   }
+}
+
+// Hook the new checkbox to the admin settings
+add_action('admin_init', 'add_elementor_page_view_checkbox');
+
+// Hook to the admin page to apply JavaScript changes
+add_action('admin_head', 'hide_elementor_notices_links');
+
+
 /*  REMOVE DASHBOARD META BOXES
 _____________________________________________________________________*/
 
