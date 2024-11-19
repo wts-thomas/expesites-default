@@ -493,7 +493,7 @@ function render_elementor_page_view_checkbox() {
    // Retrieve the current value of the setting
    $hide_notices = get_option('hide_elementor_notices');
    ?>
-   <input type="checkbox" name="hide_elementor_notices" value="1" <?php checked(1, $hide_notices); ?>> Hides the edit with Elementor name and links when viewing all Pages
+   <input type="checkbox" name="hide_elementor_notices" value="1" <?php checked(1, $hide_notices); ?>> Hides the "Edit with Elementor" name, links, and preceding pipe when viewing all Pages
    <?php
 }
 
@@ -522,10 +522,22 @@ function hide_elementor_notices_links() {
                    }
                });
 
-               // Hide "Edit with Elementor" button
+               // Hide "Edit with Elementor" button and its preceding pipe
                const editWithElementorElements = document.querySelectorAll('.edit_with_elementor');
                editWithElementorElements.forEach(function (element) {
                    element.style.display = 'none';
+                   
+                   // Hide the preceding pipe in the "view" span
+                   const viewSpan = element.previousElementSibling;
+                   if (viewSpan && viewSpan.classList.contains('view')) {
+                       const previousSibling = viewSpan.lastChild;
+                       if (previousSibling && previousSibling.nodeType === Node.TEXT_NODE) {
+                           const trimmedText = previousSibling.textContent.trim();
+                           if (trimmedText === '|') {
+                               previousSibling.textContent = ''; // Clear the pipe text
+                           }
+                       }
+                   }
                });
            });
        </script>
@@ -533,10 +545,7 @@ function hide_elementor_notices_links() {
    }
 }
 
-// Hook the new checkbox to the admin settings
 add_action('admin_init', 'add_elementor_page_view_checkbox');
-
-// Hook to the admin page to apply JavaScript changes
 add_action('admin_head', 'hide_elementor_notices_links');
 
 
@@ -769,14 +778,6 @@ __________________________________________*/
 // keeps the viewer at the form to read the confirmation message
 // instead of having to scroll to message
 add_filter( 'gform_confirmation_anchor', '__return_true' );
-
-
-/*  ACF FIELD - FUNCTIONS
-________________________________________________________________________*/
-
-
-
-
 
 
 /*  ELEMENTOR QUERIES - USING QUERY ID'S
