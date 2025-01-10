@@ -723,32 +723,6 @@ function my_widget_title($t)
 }
 
 
-/*  TINY MCE EDITS & CUSTOMIZATIONS
-________________________________________________________________________*/
-
-// Add a custom button to the MCE editor
-function my_custom_mce_buttons($buttons) {
-   array_push($buttons, 'my_custom_class'); // Add your button's identifier
-   return $buttons;
-}
-add_filter('mce_buttons', 'my_custom_mce_buttons');
-
-// Add custom JS to the editor
-function my_custom_mce_js($plugin_array) {
-   $plugin_array['my_custom_script'] = get_template_directory_uri() . '/js/my-custom-tinymce.js'; // Path to your JS file
-   return $plugin_array;
-}
-add_filter('mce_external_plugins', 'my_custom_mce_js');
-
-// Enqueue the JS file
-function my_enqueue_custom_js() {
-   if (is_admin()) {
-       wp_enqueue_script('my_custom_js', get_template_directory_uri() . '/js/my-custom-tinymce.js', array('jquery'), '', true);
-   }
-}
-add_action('admin_enqueue_scripts', 'my_enqueue_custom_js');
-
-
 /*  PLUGIN EDITS
 ________________________________________________________________________*/
 
@@ -764,13 +738,21 @@ function yoasttobottom() {
 }
 add_filter( 'wpseo_metabox_prio', 'yoasttobottom');
 
+/*  SEO Framework
+__________________________________________*/
+
+add_filter(
+	'the_seo_framework_metabox_priority',
+	function () {
+		return 'low';
+	},
+);
 
 /*  Tablepress
 __________________________________________*/
 
 // Removes the Tablepress Admin links on site
 add_filter( 'tablepress_edit_link_below_table', '__return_false' );
-
 
 /*  GRAVITY FORMS
 __________________________________________*/
