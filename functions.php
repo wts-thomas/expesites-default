@@ -325,6 +325,44 @@ function custom_elementor_shape_dividers( $additional_shapes ) {
 add_filter( 'elementor/shapes/additional_shapes', 'custom_elementor_shape_dividers' );
 
 
+/*  HIDE COMMENTS MENU WITH CHECKBOX SHOW/HIDE
+_____________________________________________________________________*/
+
+// Add the checkbox setting to the General settings page for Comments
+function exp_add_comments_visibility_checkbox() {
+   add_settings_field(
+       'exp_hide_comments', // Option ID
+       'Comments Admin Menu', // Label for the checkbox
+       'exp_render_comments_visibility_checkbox', // Callback to render the checkbox
+       'general' // Settings page (general)
+   );
+   
+   register_setting('general', 'exp_hide_comments'); // Register the setting
+}
+
+function exp_render_comments_visibility_checkbox() {
+   // Retrieve the current value of the setting
+   $hide_comments = get_option('exp_hide_comments');
+   ?>
+   <input type="checkbox" name="exp_hide_comments" value="1" <?php checked(1, $hide_comments); ?>> Hide Comments Admin Menu for all users
+   <?php
+}
+
+// Conditionally hide or show Comments menu based on the checkbox setting
+function exp_conditional_hide_comments_menu() {
+   $hide_comments = get_option('exp_hide_comments');
+
+   // If the checkbox is checked, hide Comments for all users
+   if ($hide_comments) {
+       remove_menu_page('edit-comments.php'); // Comments admin menu slug
+   }
+}
+
+// Hook the new functions to appropriate WordPress actions
+add_action('admin_init', 'exp_add_comments_visibility_checkbox'); // To add the checkbox
+add_action('admin_menu', 'exp_conditional_hide_comments_menu', 9999); // To hide/show Comments menu
+
+
 /*  ADMIN DASHBOARD LINKS
 ________________________________________________________________________*/
 
