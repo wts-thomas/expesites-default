@@ -34,12 +34,6 @@ add_action('admin_enqueue_scripts', 'wpdocs_enqueue_custom_admin_script', 100);
 // Adds the Excerpt meta box for pages.
 add_post_type_support( 'page', 'excerpt' );
 
-// Disables WordPress Autosave
-add_action( 'admin_init', 'disable_autosave' );
-   function disable_autosave() {
-   wp_deregister_script( 'autosave' );
-}
-
 // Adds Title support for pages
 function title_theme_slug_setup() {
    add_theme_support( 'title-tag' );
@@ -305,24 +299,6 @@ function hide_elementor_notices() {
    </style>';
 }
 add_action('admin_head', 'hide_elementor_notices');
-
-
-/*  ELEMENTOR, CUSTOM SHAPE DIVIDERS
-________________________________________________________________________*/
-
-function custom_elementor_shape_dividers( $additional_shapes ) {
-
-	$additional_shapes['shape-divider-1'] = [
-		'title'        => esc_html__( 'Slashes', 'textdomain' ),
-		'url'          => get_stylesheet_directory_uri() . '/assets/shapes/section-divider_slashes.svg',
-		'path'         => get_stylesheet_directory() . '/assets/shapes/section-divider_slashes.svg',
-		'height_only'  => false,
-	];
-
-	return $additional_shapes;
-
-}
-add_filter( 'elementor/shapes/additional_shapes', 'custom_elementor_shape_dividers' );
 
 
 /*  HIDE COMMENTS MENU WITH CHECKBOX SHOW/HIDE
@@ -643,25 +619,15 @@ function add_theme_enqueues() {
 	wp_enqueue_script( 'viewportHeight', get_template_directory_uri() . '/js/viewportHeight.js#asyncload', array ( 'jquery' ), 1, true);
 	wp_enqueue_script( 'responsiveTables', get_template_directory_uri() . '/js/responsiveTables.js#asyncload', array ( 'jquery' ), 1, true);
    wp_enqueue_script( 'jquery.matchHeight', get_template_directory_uri() . '/js/jquery.matchHeight.js#asyncload', array ( 'jquery' ), 1, false);
+   wp_enqueue_script( 'scrolltoHide', get_template_directory_uri() . '/js/scrolltoHide.js#asyncload', array ( 'jquery' ), 1, false);
 }
 add_action( 'wp_enqueue_scripts', 'add_theme_enqueues' );
 
 
-// DEFER RECAPTCHA
-add_filter( 'clean_url', function( $url )
-{
-    if ( FALSE === strpos( $url, 'www.google.com/recaptcha/api.js' ) )
-    { // not our file
-        return $url;
-    }
-    // Must be a ', not "!
-    return "$url' defer='defer";
-}, 11, 1 );
-
-
 /*  SVG IMAGES
 ________________________________________________________________________*/
-// NOTE: SVG width and height functions are not required since we're using Elementor and its' SVG upload to media library functions.
+// NOTE: SVG width and height functions are not required since we're 
+// using Elementor and its' SVG upload to media library functions.
 
 /*  Allows the use of SVGs to be uploaded to the Media Library
 ________________________________________________________________________*/
@@ -723,6 +689,9 @@ function eg_register_menus() {
          'content_altThr_menu' => __( 'Alternate Menu - 3' ),
          'content_altFou_menu' => __( 'Alternate Menu - 4' ),
          'content_altFiv_menu' => __( 'Alternate Menu - 5' ),
+         'content_altSix_menu' => __( 'Alternate Menu - 6' ),
+         'content_altSev_menu' => __( 'Alternate Menu - 7' ),
+         'content_altEig_menu' => __( 'Alternate Menu - 8' ),
     	)
 	);
 }

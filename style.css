@@ -4,7 +4,7 @@ Theme URI: https://expesites.com
 Author: ExpeSites
 Author URI: https://expesites.com
 Description: A vanilla based Theme to be used with the Elementor Page Builder
-Version: 1.2.0
+Version: 2.0.0
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 8.0
@@ -77,7 +77,8 @@ body .full-height {
    pointer-events: auto; /* Re-enable pointer events */
 }
 
-.videoContainer {
+.videoContainer,
+.videoContainer .e-hosted-video {
    height: 100%;
 }
 .videoContainer .elementor-video {
@@ -124,35 +125,6 @@ body .full-height {
    margin-bottom: 0.75em;
 }
 
-/*	Text Leaders (similar to tabs in a text editor) 
---------------------------------------------------------------- */
-
-ul.leaders {
-   max-width: 40em;
-   padding: 0;
-   overflow-x: hidden;
-   list-style: none;
-}
-ul.leaders li:before {
-   float: left;
-   width: 0;
-   white-space: nowrap;
-   content:
-   ". . . . . . . . . . . . . . . . . . . . "
-   ". . . . . . . . . . . . . . . . . . . . "
-   ". . . . . . . . . . . . . . . . . . . . "
-   ". . . . . . . . . . . . . . . . . . . . "
-}
-ul.leaders span:first-child {
-   padding-right: 0.33em;
-   background: white;
-}
-ul.leaders span + span {
-   float: right;
-   padding-left: 0.33em;
-   background: white;
-}
-
 /* ------------------------------------------------------------
 	BUTTONS - GLOBAL
 /* ------------------------------------------------------------ */
@@ -175,45 +147,6 @@ ul.leaders span + span {
 /* ------------------------------------------------------------
 	CONTAINERS AND WRAPPERS
 /* ------------------------------------------------------------ */
-
-.elementor-widget-image-carousel .swiper-container .swiper-slide figure {
-   line-height: 0;
-}
-
-.dropShadow-50 {
-   filter: drop-shadow(0px 0px 10px rgba(0,0,0,0.5));
-   -webkit-filter: drop-shadow(0px 0px 10px rgba(0,0,0,0.5));
-}
-.dropShadow-75 {
-   filter: drop-shadow(0px 0px 10px rgba(0,0,0,0.75));
-   -webkit-filter: drop-shadow(0px 0px 10px rgba(0,0,0,0.75));
-}
-.dropShadow-85 {
-   filter: drop-shadow(0px 0px 10px rgba(0,0,0,0.85));
-   -webkit-filter: drop-shadow(0px 0px 10px rgba(0,0,0,0.85));
-}
-
-/*	TinyMCE Image Text Wrap - Default Wordpress
---------------------------------------------------------------- */
-
-img.alignright { 
-   float: right; margin: 0 0 1em 1em; 
-}
-img.alignleft { 
-   float: left; margin: 0 1em 1em 0; 
-}
-img.aligncenter { 
-   display: block; margin-left: auto; margin-right: auto; 
-}
-.alignright { 
-   float: right; 
-}
-.alignleft { 
-   float: left; 
-}
-.aligncenter { 
-   display: block; margin-left: auto; margin-right: auto; 
-}
 
 /*	Horizontal Divider Line
 --------------------------------------------------------------- */
@@ -323,31 +256,6 @@ body:not(.elementor-editor-active) .e-con {
 .elementor > .e-con.e-con.e-con {
    scroll-snap-align: start;
    scroll-snap-stop: always;
-}
-
-/* ------------------------------------------------------------
-	Custom Shape Dividers
-/* ------------------------------------------------------------ */
-
-/*	Maintains the height of the custom shape divider - Slash
---------------------------------------------------------------- */
-
-.customShape_slash .elementor-shape {
-   height: 26px;
-   width: auto;
-   margin-bottom: -5px;
-}
-.customShape_slash .elementor-shape-top {
-   height: 26px;
-   width: auto;
-   margin-top: -2px;
-   margin-bottom: 0px;
-}
-
-.customShape_slash .elementor-shape svg {
-   height: 26px;
-   width: auto;
-   max-width: none;
 }
 
 /*  HEADER SCROLL MOVEMENTS
