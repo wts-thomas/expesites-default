@@ -12,6 +12,14 @@ $myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
 //Set the branch that contains the stable release.
 $myUpdateChecker->setBranch('main');
 
+/* --------------------------------------------------------------------- */
+/* --------------------------------------------------------------------- */
+
+
+
+/* --------------------------------------------------------------------- */
+/* --------------------------------------------------------------------- */
+
 // Custom Admin Styles
 function my_admin_head() {
    // Check if we are in the WordPress admin and the user is logged in
@@ -293,154 +301,12 @@ ________________________________________________________________________*/
 
 function hide_elementor_notices() {
    echo '<style>
-       .e-notice {
+       .notice.e-notice.e-notice--dismissible.e-notice--extended {
            display: none !important;
        }
    </style>';
 }
 add_action('admin_head', 'hide_elementor_notices');
-
-
-/*  HIDE COMMENTS MENU WITH CHECKBOX SHOW/HIDE
-_____________________________________________________________________*/
-
-// Add the checkbox setting to the General settings page for Comments
-function exp_add_comments_visibility_checkbox() {
-   add_settings_field(
-       'exp_hide_comments', // Option ID
-       'Comments Admin Menu', // Label for the checkbox
-       'exp_render_comments_visibility_checkbox', // Callback to render the checkbox
-       'general' // Settings page (general)
-   );
-   
-   register_setting('general', 'exp_hide_comments'); // Register the setting
-}
-
-function exp_render_comments_visibility_checkbox() {
-   // Retrieve the current value of the setting
-   $hide_comments = get_option('exp_hide_comments');
-   ?>
-   <input type="checkbox" name="exp_hide_comments" value="1" <?php checked(1, $hide_comments); ?>> Hide Comments Admin Menu for all users
-   <?php
-}
-
-// Conditionally hide or show Comments menu based on the checkbox setting
-function exp_conditional_hide_comments_menu() {
-   $hide_comments = get_option('exp_hide_comments');
-
-   // If the checkbox is checked, hide Comments for all users
-   if ($hide_comments) {
-       remove_menu_page('edit-comments.php'); // Comments admin menu slug
-   }
-}
-
-// Hook the new functions to appropriate WordPress actions
-add_action('admin_init', 'exp_add_comments_visibility_checkbox'); // To add the checkbox
-add_action('admin_menu', 'exp_conditional_hide_comments_menu', 9999); // To hide/show Comments menu
-
-
-/*  ADMIN DASHBOARD LINKS
-________________________________________________________________________*/
-
-// Remove Admin features from Dashboard excluding users
-
-// Add the checkbox setting to the General settings page
-function exp_add_admin_features_checkbox() {
-   add_settings_field(
-       'exp_disable_admin_features_removal',
-       'Enable Admin Features',
-       'exp_render_admin_features_checkbox',
-       'general'
-   );
-   
-   register_setting('general', 'exp_disable_admin_features_removal');
-}
-
-function exp_render_admin_features_checkbox() {
-   // Retrieve the current value of the setting
-   $disable_removal = get_option('exp_disable_admin_features_removal');
-   ?>
-   <input type="checkbox" name="exp_disable_admin_features_removal" value="1" <?php checked(1, $disable_removal); ?>> Shows Admin Features for non ExpeSites Users
-   <?php
-}
-
-// Conditionally remove menu items based on the checkbox setting
-function exp_conditional_remove_menus() {
-   $disable_removal = get_option('exp_disable_admin_features_removal');
-
-   // Only execute the menu removal if the checkbox is not checked
-   if (!$disable_removal) {
-       exp_remove_menus();
-   }
-}
-
-// Original function to remove admin features
-function exp_remove_menus() { 
-  $current_user = wp_get_current_user(); 
-  if (strpos($current_user->user_email, '@expesites.com') === false) { 
-     // List of menu pages to remove
-     remove_submenu_page('index.php', 'update-core.php');
-     remove_menu_page('edit-comments.php');
-     remove_menu_page('themes.php');                             
-     remove_menu_page('plugins.php');                           
-     remove_menu_page('tools.php');                             
-     remove_menu_page('options-general.php');                   
-     remove_menu_page('edit.php?post_type=acf-field-group');
-     remove_menu_page('cptui_main_menu');                       
-     remove_menu_page('snippets');                              
-     remove_menu_page('elementor');                             
-     remove_menu_page('edit.php?post_type=elementor_library');
-     remove_submenu_page('edit.php?post_type=elementor_library', 'edit.php?post_type=elementor_library&tabs_group=popup&elementor_library_type=popup');
-     remove_menu_page('dce-features');
-     remove_menu_page('search-filter');
-     remove_menu_page('wp-mail-smtp');
-     remove_menu_page('itsec');
-     remove_menu_page('wpseo_dashboard');
-  }
-}
-
-// Hook the functions to appropriate WordPress actions
-add_action('admin_init', 'exp_add_admin_features_checkbox');
-add_action('admin_menu', 'exp_conditional_remove_menus', 9999);
-
-
-/*  SHOW GRAVITY FORMS FOR USERS WITH CHECKBOX
-_____________________________________________________________________*/
-
-// Add the checkbox setting to the General settings page for Gravity Forms
-function exp_add_gravity_forms_visibility_checkbox() {
-   add_settings_field(
-       'exp_show_gravity_forms', // Option ID
-       'Gravity Forms Admin Menu', // Label for the checkbox
-       'exp_render_gravity_forms_visibility_checkbox', // Callback to render the checkbox
-       'general' // Settings page (general)
-   );
-   
-   register_setting('general', 'exp_show_gravity_forms'); // Register the setting
-}
-
-function exp_render_gravity_forms_visibility_checkbox() {
-   // Retrieve the current value of the setting
-   $show_gravity_forms = get_option('exp_show_gravity_forms');
-   ?>
-   <input type="checkbox" name="exp_show_gravity_forms" value="1" <?php checked(1, $show_gravity_forms); ?>> Show Gravity Forms Admin Menu for ExpeSites Users
-   <?php
-}
-
-// Conditionally hide or show Gravity Forms menu based on the checkbox setting
-function exp_conditional_hide_gravity_forms_menu() {
-   $show_gravity_forms = get_option('exp_show_gravity_forms');
-   $current_user = wp_get_current_user();
-
-   // If the user is not from ExpeSites and the checkbox is unchecked, hide Gravity Forms
-   if (strpos($current_user->user_email, '@expesites.com') === false && !$show_gravity_forms) {
-       remove_menu_page('gf_edit_forms'); // Gravity Forms admin menu slug
-   }
-}
-
-// Hook the new functions to appropriate WordPress actions
-add_action('admin_init', 'exp_add_gravity_forms_visibility_checkbox'); // To add the checkbox
-add_action('admin_menu', 'exp_conditional_hide_gravity_forms_menu', 9999); // To hide/show Gravity Forms menu
 
 
 /*  HIDE, EDIT WITH ELEMENTOR BUTTON(S)
@@ -563,6 +429,145 @@ add_action('admin_init', 'add_elementor_page_view_checkbox');
 add_action('admin_head', 'hide_elementor_notices_links');
 
 
+/*  HIDE COMMENTS MENU WITH CHECKBOX SHOW/HIDE
+_____________________________________________________________________*/
+
+// Add the checkbox setting to the General settings page for Comments
+function exp_add_comments_visibility_checkbox() {
+   add_settings_field(
+       'exp_hide_comments', // Option ID
+       'Comments Admin Menu', // Label for the checkbox
+       'exp_render_comments_visibility_checkbox', // Callback to render the checkbox
+       'general' // Settings page (general)
+   );
+   
+   register_setting('general', 'exp_hide_comments'); // Register the setting
+}
+
+function exp_render_comments_visibility_checkbox() {
+   // Retrieve the current value of the setting
+   $hide_comments = get_option('exp_hide_comments');
+   ?>
+   <input type="checkbox" name="exp_hide_comments" value="1" <?php checked(1, $hide_comments); ?>> Hide Comments Admin Menu for all users
+   <?php
+}
+
+// Conditionally hide or show Comments menu based on the checkbox setting
+function exp_conditional_hide_comments_menu() {
+   $hide_comments = get_option('exp_hide_comments');
+
+   // If the checkbox is checked, hide Comments for all users
+   if ($hide_comments) {
+       remove_menu_page('edit-comments.php'); // Comments admin menu slug
+   }
+}
+
+// Hook the new functions to appropriate WordPress actions
+add_action('admin_init', 'exp_add_comments_visibility_checkbox'); // To add the checkbox
+add_action('admin_menu', 'exp_conditional_hide_comments_menu', 9999); // To hide/show Comments menu
+
+
+/*  ADMIN DASHBOARD LINKS
+________________________________________________________________________*/
+// Remove Admin features from Dashboard excluding users
+
+// Add the checkbox setting to the General settings page
+function exp_add_admin_features_checkbox() {
+   add_settings_field(
+       'exp_disable_admin_features_removal',
+       'Enable Admin Features',
+       'exp_render_admin_features_checkbox',
+       'general'
+   );
+   register_setting('general', 'exp_disable_admin_features_removal');
+}
+
+function exp_render_admin_features_checkbox() {
+   // Retrieve the current value of the setting
+   $disable_removal = get_option('exp_disable_admin_features_removal');
+   ?>
+   <input type="checkbox" name="exp_disable_admin_features_removal" value="1" <?php checked(1, $disable_removal); ?>> Shows Admin Features for non ExpeSites Users
+   <?php
+}
+
+// Conditionally remove menu items based on the checkbox setting
+function exp_conditional_remove_menus() {
+   $disable_removal = get_option('exp_disable_admin_features_removal');
+
+   // Only execute the menu removal if the checkbox is not checked
+   if (!$disable_removal) {
+       exp_remove_menus();
+   }
+}
+
+// Original function to remove admin features
+function exp_remove_menus() { 
+  $current_user = wp_get_current_user(); 
+  if (strpos($current_user->user_email, '@expesites.com') === false) { 
+     // List of menu pages to remove
+     remove_submenu_page('index.php', 'update-core.php');
+     remove_menu_page('themes.php');                             
+     remove_menu_page('plugins.php');                           
+     remove_menu_page('tools.php');                             
+     remove_menu_page('options-general.php');                   
+     remove_menu_page('edit.php?post_type=acf-field-group');
+     remove_menu_page('cptui_main_menu');                       
+     remove_menu_page('snippets');                              
+     remove_menu_page('elementor');                             
+     remove_menu_page('edit.php?post_type=elementor_library');
+     remove_submenu_page('edit.php?post_type=elementor_library', 'edit.php?post_type=elementor_library&tabs_group=popup&elementor_library_type=popup');
+     remove_menu_page('dce-features');
+     remove_menu_page('search-filter');
+     remove_menu_page('wp-mail-smtp');
+     remove_menu_page('itsec');
+     remove_menu_page('wpseo_dashboard');
+  }
+}
+
+// Hook the functions to appropriate WordPress actions
+add_action('admin_init', 'exp_add_admin_features_checkbox');
+add_action('admin_menu', 'exp_conditional_remove_menus', 9999);
+
+
+/*  SHOW GRAVITY FORMS FOR USERS WITH CHECKBOX
+_____________________________________________________________________*/
+
+// Add the checkbox setting to the General settings page for Gravity Forms
+function exp_add_gravity_forms_visibility_checkbox() {
+   add_settings_field(
+       'exp_show_gravity_forms', // Option ID
+       'Gravity Forms Admin Menu', // Label for the checkbox
+       'exp_render_gravity_forms_visibility_checkbox', // Callback to render the checkbox
+       'general' // Settings page (general)
+   );
+   
+   register_setting('general', 'exp_show_gravity_forms'); // Register the setting
+}
+
+function exp_render_gravity_forms_visibility_checkbox() {
+   // Retrieve the current value of the setting
+   $show_gravity_forms = get_option('exp_show_gravity_forms');
+   ?>
+   <input type="checkbox" name="exp_show_gravity_forms" value="1" <?php checked(1, $show_gravity_forms); ?>> Show Gravity Forms Admin Menu for ExpeSites Users
+   <?php
+}
+
+// Conditionally hide or show Gravity Forms menu based on the checkbox setting
+function exp_conditional_hide_gravity_forms_menu() {
+   $show_gravity_forms = get_option('exp_show_gravity_forms');
+   $current_user = wp_get_current_user();
+
+   // If the user is not from ExpeSites and the checkbox is unchecked, hide Gravity Forms
+   if (strpos($current_user->user_email, '@expesites.com') === false && !$show_gravity_forms) {
+       remove_menu_page('gf_edit_forms'); // Gravity Forms admin menu slug
+   }
+}
+
+// Hook the new functions to appropriate WordPress actions
+add_action('admin_init', 'exp_add_gravity_forms_visibility_checkbox'); // To add the checkbox
+add_action('admin_menu', 'exp_conditional_hide_gravity_forms_menu', 9999); // To hide/show Gravity Forms menu
+
+
 /*  REMOVE DASHBOARD META BOXES
 _____________________________________________________________________*/
 
@@ -622,6 +627,17 @@ function add_theme_enqueues() {
    wp_enqueue_script( 'scrolltoHide', get_template_directory_uri() . '/js/scrolltoHide.js#asyncload', array ( 'jquery' ), 1, false);
 }
 add_action( 'wp_enqueue_scripts', 'add_theme_enqueues' );
+
+// DEFER RECAPTCHA
+add_filter( 'clean_url', function( $url )
+{
+    if ( FALSE === strpos( $url, 'www.google.com/recaptcha/api.js' ) )
+    { // not our file
+        return $url;
+    }
+    // Must be a ', not "!
+    return "$url' defer='defer";
+}, 11, 1 );
 
 
 /*  SVG IMAGES
@@ -697,7 +713,6 @@ function eg_register_menus() {
 }
 add_action( 'init', 'eg_register_menus' );
 
-
 function cleanname($v) {
 $v = preg_replace('/[^a-zA-Z0-9s]/', '', $v);
 $v = str_replace(' ', '-', $v);
@@ -735,8 +750,8 @@ ________________________________________________________________________*/
 
 /*  Yoast
 __________________________________________*/
-
 // Disable Yoast SEO Primary Category Feature
+
 add_filter( 'wpseo_primary_term_taxonomies', '__return_false' );
 
 // Moves Yoast below Content Editor
@@ -757,15 +772,15 @@ add_filter(
 
 /*  Tablepress
 __________________________________________*/
-
 // Removes the Tablepress Admin links on site
+
 add_filter( 'tablepress_edit_link_below_table', '__return_false' );
 
 /*  GRAVITY FORMS
 __________________________________________*/
-
 // keeps the viewer at the form to read the confirmation message
 // instead of having to scroll to message
+
 add_filter( 'gform_confirmation_anchor', '__return_true' );
 
 

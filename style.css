@@ -4,7 +4,7 @@ Theme URI: https://expesites.com
 Author: ExpeSites
 Author URI: https://expesites.com
 Description: A vanilla based Theme to be used with the Elementor Page Builder
-Version: 2.0.0
+Version: 2.1.0
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 8.0
@@ -77,10 +77,17 @@ body .full-height {
    pointer-events: auto; /* Re-enable pointer events */
 }
 
+/*	Video Containers 
+--------------------------------------------------------------- */
+
 .videoContainer,
 .videoContainer .e-hosted-video {
-   height: 100%;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
 }
+
 .videoContainer .elementor-video {
    position: absolute;
    top: 50%;
@@ -91,6 +98,18 @@ body .full-height {
    object-fit: cover;
 }
 
+/* Specific styles for Chrome */
+/* @media screen and (-webkit-min-device-pixel-ratio:0) {
+   .videoContainer .elementor-video {
+      position: relative;
+      top: 0;
+      left: 0;
+      height: 100vh !important;
+      width: auto;
+      transform: none;
+   }
+} */
+ 
 /* ------------------------------------------------------------
 	FONTS
 /* ------------------------------------------------------------ */
