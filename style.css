@@ -4,7 +4,7 @@ Theme URI: https://expesites.com
 Author: ExpeSites
 Author URI: https://expesites.com
 Description: A vanilla based Theme to be used with the Elementor Page Builder
-Version: 2.1.0
+Version: 2.1.1
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 8.0
@@ -280,15 +280,15 @@ body:not(.elementor-editor-active) .e-con {
 /*  HEADER SCROLL MOVEMENTS
 ________________________________________________________________________*/
 
-.headerDiv-move {
+.elementor-element .headerDiv-move {
    position: relative;
    top: 0px;
    transition: 0.75s;
 }
-.headerDiv-move-up {
+.elementor-element .headerDiv-move-up {
   position: relative;
   top: -350px;
-   transition: 0.75s;
+  transition: 0.75s;
 }
 
 /* ------------------------------------------------------------ */
