@@ -443,9 +443,9 @@ function exp_conditional_remove_menus() {
 }
 
 // Original function to remove admin features
-function exp_remove_menus() { 
+function wts_remove_menus() { 
   $current_user = wp_get_current_user(); 
-  if (strpos($current_user->user_email, '@expesites.com') === false) { 
+  if (strpos($current_user->user_email, '@wtsks.com') === false) { 
      // List of menu pages to remove
      remove_submenu_page('index.php', 'update-core.php');
      remove_menu_page('themes.php');                             
@@ -463,6 +463,10 @@ function exp_remove_menus() {
      remove_menu_page('wp-mail-smtp');
      remove_menu_page('itsec');
      remove_menu_page('wpseo_dashboard');
+     remove_menu_page('theseoframework-settings');
+     remove_menu_page('tablepress');
+     remove_menu_page('uaepro');
+     remove_menu_page('dynamic-shortcodes');
   }
 }
 
