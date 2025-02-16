@@ -443,9 +443,9 @@ function exp_conditional_remove_menus() {
 }
 
 // Original function to remove admin features
-function wts_remove_menus() { 
+function exp_remove_menus() { 
   $current_user = wp_get_current_user(); 
-  if (strpos($current_user->user_email, '@wtsks.com') === false) { 
+  if (strpos($current_user->user_email, '@expesites.com') === false) { 
      // List of menu pages to remove
      remove_submenu_page('index.php', 'update-core.php');
      remove_menu_page('themes.php');                             
