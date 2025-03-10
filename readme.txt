@@ -4,7 +4,7 @@ Contributors: Thomas Rainer
 Requires at least: 6.0
 Tested up to: 6.5
 Stable tag: 1.0
-Version: 3.0.1
+Version: 3.0.2
 Requires PHP: 8.0
 JQuery: 3.6.3
 License: GNU General Public License v3 or later
@@ -19,11 +19,14 @@ This theme resets the WordPress environment and prepares it for smooth operation
 
 Screenshot's images & icons are licensed under: Creative Commons (CC0), https://creativecommons.org/publicdomain/zero/1.0/legalcode
 
+= 3.0.2 - 02-16-2025 =
+* Fixed critical error for hidding menu checkbox
+
 = 3.0.1 - 02-14-2025 =
 * Removed additional admin menus from non Exp admins
 
 = 3.0.0 - 02-07-2025 =
-* Refactored some functions in-lieu of using Perfmatters for optimization
+* Removed redundant optimization functions 
 
 = 2.2.0 - 02-07-2025 =
 * Added a News page template
